@@ -2,12 +2,9 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-RUN pip install --no-cache-dir hatchling
-
-COPY pyproject.toml README.md ./
 COPY server.py ./
-RUN pip install --no-cache-dir -e .
+RUN pip install --no-cache-dir "fastmcp>=2.0.0" "uvicorn>=0.30.0"
 
 EXPOSE 8000
 
-CMD ["uk-business-mcp"]
+CMD ["python", "server.py"]

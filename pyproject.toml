@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "uk-business-mcp"
+version = "0.1.0"
+description = "One MCP server for UK business — GOV.UK, legal, due diligence, and property tools behind a single URL."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+keywords = ["mcp", "uk", "business", "legal", "govuk", "property", "fastmcp"]
+authors = [
+    { name = "Paul Boucherat", email = "paul@bouch.dev" },
+]
+dependencies = [
+    "fastmcp>=2.0.0",
+    "uvicorn>=0.30.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/paulieb89/uk-business-mcp"
+Repository = "https://github.com/paulieb89/uk-business-mcp"
+
+[project.scripts]
+uk-business-mcp = "server:main"

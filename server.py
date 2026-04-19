@@ -17,7 +17,11 @@ async def health(request):
 
 def main():
     import uvicorn
-    uvicorn.run(mcp.http_app(), host="0.0.0.0", port=8000)
+    # stateless_http=True: each request creates a fresh transport context.
+    # Required for aggregator proxies (Lesson 32) and multi-machine Fly
+    # deploys (Lesson 2) — without it, clients hit "Missing session ID"
+    # on any request not preceded by initialize on the same machine.
+    uvicorn.run(mcp.http_app(stateless_http=True), host="0.0.0.0", port=8000)
 
 
 if __name__ == "__main__":

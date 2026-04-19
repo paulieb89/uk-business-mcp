@@ -19,6 +19,12 @@ dependencies = [
     "pydantic==2.13.0",
     "httpx==0.28.1",
     "uvicorn==0.44.0",
+    # zstandard is required for any FastMCP proxy that talks to Fly.io-hosted
+    # upstreams: Fly's edge compresses MCP responses with zstd, and without
+    # this decoder every upstream tools/list fails silently (see Lesson 30).
+    # We currently get it transitively via httpx, but pin explicitly so a
+    # future dep resolution doesn't drop it.
+    "zstandard>=0.22.0",
 ]
 
 [project.urls]

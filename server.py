@@ -12,14 +12,13 @@ mcp = FastMCP(
         "  dd_*    — Due Diligence: Companies House, Charity Commission, Land Registry, Gazette, VAT\n"
         "  prop_*  — Property: Land Registry, EPC, Rightmove, yields, stamp duty, planning\n"
         "\n"
-        "Due-diligence resources (read by URI after searching with dd_company_search etc.):\n"
-        "  company://dd/{company_number}/profile   — Companies House profile\n"
-        "  company://dd/{company_number}/officers  — active officers\n"
-        "  company://dd/{company_number}/psc       — persons with significant control\n"
-        "  disqualification://dd/{officer_id}      — disqualification record\n"
-        "  charity://dd/{charity_number}/profile   — Charity Commission profile\n"
-        "\n"
-        "For tool-only clients: dd_list_resources and dd_read_resource are available."
+        "Due-diligence resources — use dd_list_resources to discover, dd_read_resource to fetch.\n"
+        "Pass the URI exactly as returned by dd_list_resources (no dd/ prefix):\n"
+        "  company://{company_number}/profile   — Companies House profile\n"
+        "  company://{company_number}/officers  — active officers\n"
+        "  company://{company_number}/psc       — persons with significant control\n"
+        "  disqualification://{officer_id}      — disqualification record\n"
+        "  charity://{charity_number}/profile   — Charity Commission profile"
     ),
 )
 

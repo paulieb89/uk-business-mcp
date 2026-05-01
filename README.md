@@ -1,5 +1,12 @@
 # Ledgerhall
 
+<!-- mcp-name: io.github.paulieb89/uk-business-mcp -->
+
+[![Glama](https://img.shields.io/badge/Glama-listed-orange?style=flat-square)](https://glama.ai/mcp/servers/paulieb89/uk-business-mcp)
+[![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_Server-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=ledgerhall&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fuk-business-mcp.fly.dev%2Fmcp%22%7D)
+[![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_Server-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=ledgerhall&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fuk-business-mcp.fly.dev%2Fmcp%22%7D&quality=insiders)
+[![Install in Cursor](https://img.shields.io/badge/Cursor-Install_Server-000000?style=flat-square&logoColor=white)](https://cursor.com/en/install-mcp?name=ledgerhall&config=eyJ0eXBlIjoiaHR0cCIsInVybCI6Imh0dHBzOi8vdWstYnVzaW5lc3MtbWNwLmZseS5kZXYvbWNwIn0=)
+
 **UK public data for AI agents.** One connection. Companies House, Land Registry, GOV.UK, courts, Parliament — your agent gets the lot.
 
 ```

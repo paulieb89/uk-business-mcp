@@ -32,6 +32,19 @@ mcp.mount(create_proxy("https://uk-due-diligence-mcp.fly.dev/mcp"), namespace="d
 mcp.mount(create_proxy("https://property-shared.fly.dev/mcp"), namespace="prop")
 
 
+@mcp.custom_route("/.well-known/mcp/server-card.json", methods=["GET"])
+async def smithery_server_card(request):
+    return JSONResponse({"serverInfo": {"name": "uk-business-mcp", "version": "0.1.0"}})
+
+
+@mcp.custom_route("/.well-known/glama.json", methods=["GET"])
+async def glama_claim(request):
+    return JSONResponse({
+        "$schema": "https://glama.ai/mcp/schemas/connector.json",
+        "maintainers": [{"email": "paul@bouch.dev"}],
+    })
+
+
 @mcp.custom_route("/health", methods=["GET"])
 async def health(request):
     return JSONResponse({"status": "ok"})

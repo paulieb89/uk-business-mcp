@@ -56,7 +56,8 @@ def main():
     # Required for aggregator proxies (Lesson 32) and multi-machine Fly
     # deploys (Lesson 2) — without it, clients hit "Missing session ID"
     # on any request not preceded by initialize on the same machine.
-    uvicorn.run(mcp.http_app(stateless_http=True), host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", "8080"))
+    uvicorn.run(mcp.http_app(stateless_http=True), host="0.0.0.0", port=port)
 
 
 if __name__ == "__main__":

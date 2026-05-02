@@ -1,3 +1,5 @@
+import os
+
 from fastmcp import FastMCP
 from fastmcp.server import create_proxy
 from starlette.responses import JSONResponse

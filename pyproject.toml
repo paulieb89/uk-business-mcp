@@ -33,3 +33,9 @@ Repository = "https://github.com/paulieb89/uk-business-mcp"
 
 [project.scripts]
 uk-business-mcp = "server:main"
+
+[tool.hatch.build.targets.wheel]
+only-include = ["server.py"]
+
+[tool.hatch.build.targets.sdist]
+exclude = ["fly.toml", "Dockerfile", ".mcp.json", "dist/", "uv.lock"]

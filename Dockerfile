@@ -10,7 +10,8 @@ RUN pip install --no-cache-dir \
     "pydantic==2.13.0" \
     "httpx==0.28.1" \
     "uvicorn==0.44.0" \
-    "zstandard>=0.22.0"
+    "zstandard>=0.22.0" \
+    "brotli>=1.1.0"
 
 EXPOSE 8000
 

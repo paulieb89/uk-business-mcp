@@ -25,6 +25,12 @@ dependencies = [
     # We currently get it transitively via httpx, but pin explicitly so a
     # future dep resolution doesn't drop it.
     "zstandard>=0.22.0",
+    # brotli is required for the same reason as zstandard: Fly's edge will
+    # serve Content-Encoding: br to clients that advertise it (and sometimes
+    # even when they don't). Without a brotli decoder, raw compressed bytes
+    # reach JSONRPCMessage.model_validate_json and surface as
+    # ValidationError "Invalid JSON" in mcp.client.streamable_http.
+    "brotli>=1.1.0",
 ]
 
 [project.urls]

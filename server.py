@@ -1,8 +1,22 @@
 import os
 
-from fastmcp import FastMCP
+from fastmcp import Client, FastMCP
 from fastmcp.server import create_proxy
+from mcp.types import Implementation
 from starlette.responses import JSONResponse
+
+# Identify Ledgerhall to its own upstreams. Without this, every proxied connection
+# handshakes as the SDK default `mcp/0.1.0` — and because stateless_http=True gives
+# each request a fresh transport, that is one upstream initialize PER REQUEST. On
+# uk-legal-mcp, whose ClientTrackingMiddleware is the only place in the fleet that
+# records clientInfo, `mcp/0.1.0` is the largest bucket at 9,336 connections: our
+# own facade, indistinguishable from strangers and outweighing every real client.
+# The upstreams cannot attribute what we never tell them, so tell them.
+_CLIENT_INFO = Implementation(name="ledgerhall", version="0.1.0")
+
+
+def _upstream(url: str) -> Client:
+    return Client(url, client_info=_CLIENT_INFO)
 
 mcp = FastMCP(
     "UK Business",
@@ -28,10 +42,10 @@ mcp = FastMCP(
     ),
 )
 
-mcp.mount(create_proxy("https://govuk-mcp.fly.dev/mcp"), namespace="gov")
-mcp.mount(create_proxy("https://uk-legal-mcp.fly.dev/mcp"), namespace="law")
-mcp.mount(create_proxy("https://uk-due-diligence-mcp.fly.dev/mcp"), namespace="dd")
-mcp.mount(create_proxy("https://property-shared.fly.dev/mcp"), namespace="prop")
+mcp.mount(create_proxy(_upstream("https://govuk-mcp.fly.dev/mcp")), namespace="gov")
+mcp.mount(create_proxy(_upstream("https://uk-legal-mcp.fly.dev/mcp")), namespace="law")
+mcp.mount(create_proxy(_upstream("https://uk-due-diligence-mcp.fly.dev/mcp")), namespace="dd")
+mcp.mount(create_proxy(_upstream("https://property-shared.fly.dev/mcp")), namespace="prop")
 
 
 @mcp.custom_route("/.well-known/mcp/server-card.json", methods=["GET"])

@@ -1,0 +1,34 @@
+# The Dockerfile copies server.py and nothing else — dependencies are pip-installed
+# from pinned versions inside it. Everything else here was uploaded to the builder
+# and discarded: 153 MB across 8,209 files on every deploy, to ship one 146-line file.
+
+# The big two (93 MB + 59 MB of the 153)
+.venv/
+.mypy_cache/
+
+.git/
+.gitignore
+.dockerignore
+.github/
+
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+
+.env
+.env.*
+
+tests/
+docs/
+*.md
+fly.toml
+pyproject.toml
+uv.lock
+
+.vscode/
+.idea/

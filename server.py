@@ -1,9 +1,66 @@
+import logging
 import os
 
 from fastmcp import Client, FastMCP
 from fastmcp.server import create_proxy
+from fastmcp.server.middleware import Middleware, MiddlewareContext
 from mcp.types import Implementation
-from starlette.responses import JSONResponse
+from prometheus_client import (
+    CONTENT_TYPE_LATEST,
+    Counter as PromCounter,
+    generate_latest,
+)
+from starlette.responses import JSONResponse, Response
+
+TRANSPORT = os.getenv("FASTMCP_TRANSPORT", "http")
+REGION = os.getenv("FLY_REGION", "local")
+
+client_connections_total = PromCounter(
+    "uk_business_client_connections_total",
+    "Count of MCP client initialize handshakes.",
+    labelnames=["client_name", "client_version", "transport", "region"],
+)
+
+_client_log = logging.getLogger("fastmcp.uk_business_mcp.clients")
+
+
+class ClientTrackingMiddleware(Middleware):
+    """Log clientInfo and increment connection counter on every initialize.
+
+    Ledgerhall is the fleet's single biggest caller — 672 connections to
+    uk-due-diligence in ten hours, 2.4x the next client — and until now it was the
+    only server with no metrics at all. The shop window (Glama listing, VS Code and
+    Cursor install badges) was precisely the blind spot: we could see Ledgerhall
+    calling its upstreams, and nothing about who was calling Ledgerhall.
+
+    This closes that. What it does NOT do is forward provenance downstream: upstreams
+    still see a flat `ledgerhall`, never `ledgerhall via codex-mcp-client`. That is not
+    an oversight — it is unreachable as this server is deployed. create_proxy builds a
+    per-request client factory, but the factory takes no arguments (fastmcp 3.2.4,
+    providers/proxy.py:61), and with stateless_http=True every HTTP request gets a fresh
+    session pre-marked initialised (mcp/server/session.py:93-97), so the initialize
+    carrying clientInfo never reaches the session serving the tools/call — client_params
+    is None there. Header forwarding is allow-listed to `authorization` alone
+    (client/transports/http.py:157-160). The only per-request signal that survives is the
+    incoming HTTP User-Agent via get_http_headers(), which is not clientInfo.
+
+    Counts handshakes, not tool calls; stateless_http means one initialize per request,
+    so these are connection counts, not user counts.
+    """
+
+    async def on_request(self, context: MiddlewareContext, call_next):
+        result = await call_next(context)
+        if context.method == "initialize":
+            params = context.message.params
+            info = getattr(params, "clientInfo", None)
+            client_name = getattr(info, "name", "unknown") or "unknown"
+            client_version = getattr(info, "version", "unknown") or "unknown"
+            _client_log.info(
+                "client_connected client=%s version=%s transport=%s region=%s",
+                client_name, client_version, TRANSPORT, REGION)
+            client_connections_total.labels(
+                client_name, client_version, TRANSPORT, REGION).inc()
+        return result
 
 # Identify Ledgerhall to its own upstreams. Without this, every proxied connection
 # handshakes as the SDK default `mcp/0.1.0` — and because stateless_http=True gives
@@ -20,6 +77,7 @@ def _upstream(url: str) -> Client:
 
 mcp = FastMCP(
     "UK Business",
+    middleware=[ClientTrackingMiddleware()],
     instructions=(
         "Ledgerhall: UK public data for AI agents. Four upstream namespaces:\n"
         "\n"
@@ -64,6 +122,14 @@ async def glama_claim(request):
 @mcp.custom_route("/health", methods=["GET"])
 async def health(request):
     return JSONResponse({"status": "ok"})
+
+
+# _AcceptNormalizer and _HttpGuard below only intercept /mcp, so this passes through
+# untouched. Readable unauthenticated over HTTPS — which is what lets one sweep read
+# every server's callers without a Fly token.
+@mcp.custom_route("/metrics", methods=["GET"])
+async def metrics_endpoint(request):
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 class _HttpGuard:

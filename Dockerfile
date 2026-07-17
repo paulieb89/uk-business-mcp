@@ -11,7 +11,8 @@ RUN pip install --no-cache-dir \
     "httpx==0.28.1" \
     "uvicorn==0.44.0" \
     "zstandard>=0.22.0" \
-    "brotli>=1.1.0"
+    "brotli>=1.1.0" \
+    "prometheus-client>=0.21"
 
 EXPOSE 8000
 

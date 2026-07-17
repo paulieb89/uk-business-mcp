@@ -31,6 +31,10 @@ dependencies = [
     # reach JSONRPCMessage.model_validate_json and surface as
     # ValidationError "Invalid JSON" in mcp.client.streamable_http.
     "brotli>=1.1.0",
+    # prometheus-client backs /metrics and the client_connections_total counter.
+    # NOTE: the Dockerfile pins this list AGAIN, inline — adding a dep here alone
+    # gives a green local venv and an ImportError at boot. Both files, every time.
+    "prometheus-client>=0.21",
 ]
 
 [project.urls]

@@ -31,10 +31,13 @@ dependencies = [
     # reach JSONRPCMessage.model_validate_json and surface as
     # ValidationError "Invalid JSON" in mcp.client.streamable_http.
     "brotli>=1.1.0",
-    # prometheus-client backs /metrics and the client_connections_total counter.
+    # mcpfleet-obs backs /metrics, tool-call + client-connection counters.
     # NOTE: the Dockerfile pins this list AGAIN, inline — adding a dep here alone
     # gives a green local venv and an ImportError at boot. Both files, every time.
-    "prometheus-client>=0.21",
+    # (mcpfleet-obs itself is a local editable path dep for now — see
+    # [tool.uv.sources] below — so the Dockerfile pin swap is deferred until
+    # it has a PyPI release.)
+    "mcpfleet-obs",
 ]
 
 [project.urls]
@@ -49,3 +52,19 @@ only-include = ["server.py"]
 
 [tool.hatch.build.targets.sdist]
 exclude = ["fly.toml", "Dockerfile", ".mcp.json", "dist/", "uv.lock"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.uv.sources]
+mcpfleet-obs = { path = "../mcpfleet-obs", editable = true }
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.24",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

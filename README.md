@@ -15,7 +15,7 @@ https://uk-business-mcp.fly.dev/mcp
 
 No API key. No account. Free and hosted.
 
-[Set up in 30 seconds →](https://bouch.dev/ledgerhall/)
+[Set up in 30 seconds →](https://bouch.dev/products/uk-business-mcp)
 
 ---
 
@@ -102,8 +102,9 @@ New servers appear automatically. No config changes needed.
 
 ## Links
 
-- **Product page:** [bouch.dev/ledgerhall](https://bouch.dev/ledgerhall/)
-- **Free AI skills:** [bouch.dev/tools](https://bouch.dev/tools/)
+- **Product page:** [bouch.dev/products/uk-business-mcp](https://bouch.dev/products/uk-business-mcp)
+- **Free AI skills:** [bouch.dev/tools](https://bouch.dev/tools)
+- **All servers:** [bouch.dev/products](https://bouch.dev/products)
 - **Built by:** [BOUCH](https://bouch.dev) — AI consultancy, East Midlands
 
 ## License

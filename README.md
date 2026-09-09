@@ -27,7 +27,7 @@ Once connected, your AI agent can:
 - **Research property** — comparable sales, EPC ratings, Rightmove listings, rental yields, stamp duty
 - **Search case law and legislation** — court judgments, Acts, Hansard debates, HMRC guidance
 - **Query GOV.UK** — search 700k+ pages, resolve postcodes to councils, find policy documents
-- **Run due diligence** — cross-reference Companies House, Charity Commission, Land Registry, Gazette insolvency, VAT records
+- **Run due diligence** — cross-reference Companies House, Charity Commission, Land Registry, Gazette insolvency, sanctions lists
 
 ## Setup
 
@@ -86,7 +86,7 @@ Ledgerhall is a [FastMCP](https://gofastmcp.com) proxy that bundles four special
 |--------|--------|----------|
 | `gov_` | [GOV.UK](https://github.com/paulieb89/govuk-mcp) | 700k+ GOV.UK pages, organisations, postcodes |
 | `law_` | [UK Legal](https://github.com/paulieb89/uk-legal-mcp) | Case law, legislation, Hansard, HMRC guidance, OSCOLA |
-| `dd_` | [UK Due Diligence](https://github.com/paulieb89/uk-due-diligence-mcp) | Companies House, Charity Commission, Land Registry, Gazette, VAT |
+| `dd_` | [UK Due Diligence](https://github.com/paulieb89/uk-due-diligence-mcp) | Companies House, Charity Commission, Land Registry, Gazette, sanctions |
 | `prop_` | [UK Property](https://github.com/paulieb89/property-shared) | Land Registry, EPC, Rightmove, yields, stamp duty, planning |
 
 ## How it works

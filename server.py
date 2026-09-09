@@ -26,7 +26,7 @@ mcp = FastMCP(
         "\n"
         "  gov_*   — GOV.UK: 700k+ pages, organisations, postcodes\n"
         "  law_*   — UK Legal: case law, legislation, Hansard, HMRC guidance, OSCOLA\n"
-        "  dd_*    — Due Diligence: Companies House, Charity Commission, Land Registry, Gazette, VAT\n"
+        "  dd_*    — Due Diligence: Companies House, Charity Commission, Land Registry, Gazette, sanctions\n"
         "  prop_*  — Property: Land Registry, EPC, Rightmove, yields, stamp duty, planning\n"
         "\n"
         "Due diligence workflow — search first, then fetch detail:\n"
@@ -38,8 +38,7 @@ mcp = FastMCP(
         "  dd_charity_profile   → full Charity Commission profile\n"
         "  dd_disqualified_search / dd_disqualified_profile → banned directors\n"
         "  dd_gazette_insolvency / dd_gazette_notice → insolvency notices\n"
-        "  dd_land_title_search → HMLR title register\n"
-        "  dd_vat_validate      → HMRC VAT number check"
+        "  dd_land_title_search → HMLR title register"
     ),
 )
 

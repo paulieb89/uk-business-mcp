@@ -42,10 +42,18 @@ mcp = FastMCP(
     ),
 )
 
-mcp.mount(create_proxy(_upstream("https://govuk-mcp.fly.dev/mcp")), namespace="gov")
-mcp.mount(create_proxy(_upstream("https://uk-legal-mcp.fly.dev/mcp")), namespace="law")
-mcp.mount(create_proxy(_upstream("https://uk-due-diligence-mcp.fly.dev/mcp")), namespace="dd")
-mcp.mount(create_proxy(_upstream("https://property-shared.fly.dev/mcp")), namespace="prop")
+# One declaration of the proxy mounts. mcpfleet-obs needs the same namespaces to
+# label upstream failures source="upstream" rather than blaming this server, and
+# a second hand-written copy of this list is a thing that drifts.
+PROXY_MOUNTS = {
+    "gov": "https://govuk-mcp.fly.dev/mcp",
+    "law": "https://uk-legal-mcp.fly.dev/mcp",
+    "dd": "https://uk-due-diligence-mcp.fly.dev/mcp",
+    "prop": "https://property-shared.fly.dev/mcp",
+}
+
+for _namespace, _url in PROXY_MOUNTS.items():
+    mcp.mount(create_proxy(_upstream(_url)), namespace=_namespace)
 
 
 @mcp.custom_route("/.well-known/mcp/server-card.json", methods=["GET"])
@@ -73,7 +81,7 @@ async def health(request):
 # _AcceptNormalizer and _HttpGuard below only intercept /mcp, so /metrics passes
 # through untouched — readable unauthenticated over HTTPS, which is what lets one
 # sweep read every server's callers without a Fly token.
-install(mcp, prefix="uk_business")
+install(mcp, prefix="uk_business", proxy_namespaces=PROXY_MOUNTS)
 
 
 class _HttpGuard:

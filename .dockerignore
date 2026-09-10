@@ -1,6 +1,7 @@
-# The Dockerfile copies server.py and nothing else — dependencies are pip-installed
-# from pinned versions inside it. Everything else here was uploaded to the builder
-# and discarded: 153 MB across 8,209 files on every deploy, to ship one 146-line file.
+# The Dockerfile copies pyproject.toml + uv.lock (to sync the environment from the
+# lock) and server.py, and nothing else. Everything else here was uploaded to the
+# builder and discarded: 153 MB across 8,209 files on every deploy, to ship one
+# 146-line file.
 
 # The big two (93 MB + 59 MB of the 153)
 .venv/
@@ -27,8 +28,6 @@ tests/
 docs/
 *.md
 fly.toml
-pyproject.toml
-uv.lock
 
 .vscode/
 .idea/

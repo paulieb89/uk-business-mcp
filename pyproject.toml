@@ -34,7 +34,7 @@ dependencies = [
     # mcpfleet-obs backs /metrics, tool-call + client-connection counters.
     # NOTE: the Dockerfile pins this list AGAIN, inline — adding a dep here alone
     # gives a green local venv and an ImportError at boot. Both files, every time.
-    "mcpfleet-obs>=0.1.0",
+    "mcpfleet-obs==0.2.0",
 ]
 
 [project.urls]

@@ -45,7 +45,9 @@ def _build_stub_backend() -> FastMCP:
 
 def _build_gateway(registry: CollectorRegistry) -> FastMCP:
     gw = FastMCP(name="gw")
-    install(gw, prefix="uk_business", registry=registry)
+    # proxy_namespaces mirrors server.py's PROXY_MOUNTS keys so proxied failures
+    # label source="upstream" rather than "tool".
+    install(gw, prefix="uk_business", registry=registry, proxy_namespaces=("dd",))
     # Mirrors server.py's `mcp.mount(create_proxy(_upstream(url)), namespace=...)` —
     # only the client target (a local stub, not a live fly.dev URL) differs.
     gw.mount(create_proxy(Client(_build_stub_backend())), namespace="dd")
@@ -76,6 +78,7 @@ async def test_proxied_tool_error_counts_as_error_with_category():
             "region": "local",
             "status": "error",
             "error_category": "transient",
+            "source": "upstream",
         },
     )
     assert value == 1.0
@@ -101,6 +104,7 @@ async def test_proxied_tool_success_counts_as_ok():
             "region": "local",
             "status": "ok",
             "error_category": "",
+            "source": "",
         },
     )
     assert value == 1.0

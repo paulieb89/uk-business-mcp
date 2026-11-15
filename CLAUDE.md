@@ -13,7 +13,7 @@ This repo has no domain tools of its own — it only proxies upstreams via
 
 ## Not to be confused with
 
-**`uk-due-diligence-mcp`** is a DIFFERENT repo at `/home/bch/dev/uk-due-diligence-mcp`,
+**`uk-due-diligence-mcp`** is a DIFFERENT repo at `/home/bch/dev/mcpfleet/uk-due-diligence-mcp`,
 deployed at `https://uk-due-diligence-mcp.fly.dev/mcp`. That repo is the
 standalone Companies House / Charity / HMLR / Gazette / sanctions server with 18 tools.
 It is one of the upstreams this proxy mounts, not the same thing as this proxy.

@@ -653,7 +653,7 @@ wheels = [
 
 [[package]]
 name = "mcpfleet-obs"
-version = "0.3.0"
+version = "0.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "fastmcp" },
@@ -662,9 +662,9 @@ dependencies = [
     { name = "pydantic" },
     { name = "starlette" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/84/81/13228b157efa1b86eee0ae9c612d452dcfa84c542fafd9cdb79deba5ecba/mcpfleet_obs-0.3.0.tar.gz", hash = "sha256:b1ba70b2f50b9f56ee5fd38482e594856184f9b0605e484dc034d2980b649ffc", size = 107318, upload-time = "2026-09-10T20:26:53.199Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f3/9e/8fff9fb9989b1b039cfc45c46954d47db3c3f9ef84d278a4105ad9535b6b/mcpfleet_obs-0.5.0.tar.gz", hash = "sha256:61418adacc09491a2c9039ef1a22e130984d3643035395fd23656d71aa67bf21", size = 109754, upload-time = "2026-11-15T16:27:13.2Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/21/76/943f6b5b2b1b092e8fceb44ada4526e352658b0859271ec9ad53816a9802/mcpfleet_obs-0.3.0-py3-none-any.whl", hash = "sha256:d10086d9cf83bcfc264bf3f8b4f5045a30a3e623ba4e6664472e223f1f0b6c25", size = 7782, upload-time = "2026-09-10T20:26:52.002Z" },
+    { url = "https://files.pythonhosted.org/packages/69/48/7d8ed71c8b7ebc47f6bf2a2c0d04bd87fcec62f068eab8c995074bbdde80/mcpfleet_obs-0.5.0-py3-none-any.whl", hash = "sha256:9e82bf5e8c50bf37c6b822376dbfd472d1bdba9e9eb1e66956b124a32fb3d6cb", size = 8976, upload-time = "2026-11-15T16:27:11.868Z" },
 ]
 
 [[package]]
@@ -1297,7 +1297,7 @@ wheels = [
 
 [[package]]
 name = "uk-business-mcp"
-version = "0.2.1"
+version = "0.3.0"
 source = { editable = "." }
 dependencies = [
     { name = "brotli" },
@@ -1322,7 +1322,7 @@ requires-dist = [
     { name = "fastmcp", specifier = "==3.2.4" },
     { name = "httpx", specifier = "==0.28.1" },
     { name = "mcp", specifier = "==1.27.0" },
-    { name = "mcpfleet-obs", specifier = "==0.3.0" },
+    { name = "mcpfleet-obs", specifier = "==0.5.0" },
     { name = "pydantic", specifier = "==2.13.0" },
     { name = "uvicorn", specifier = "==0.44.0" },
     { name = "zstandard", specifier = ">=0.22.0" },

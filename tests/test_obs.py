@@ -79,6 +79,8 @@ async def test_proxied_tool_error_counts_as_error_with_category():
             "status": "error",
             "error_category": "transient",
             "source": "upstream",
+            "client": "mcp",
+            "ip_hash": "",
         },
     )
     assert value == 1.0
@@ -105,6 +107,8 @@ async def test_proxied_tool_success_counts_as_ok():
             "status": "ok",
             "error_category": "",
             "source": "",
+            "client": "mcp",
+            "ip_hash": "",
         },
     )
     assert value == 1.0

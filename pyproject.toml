@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "uk-business-mcp"
-version = "0.3.0"
+version = "0.3.1"
 description = "One MCP server for UK business — GOV.UK, legal, due diligence, and property tools behind a single URL."
 readme = "README.md"
 license = { text = "MIT" }
@@ -34,7 +34,7 @@ dependencies = [
     # mcpfleet-obs backs /metrics, tool-call + client-connection counters.
     # The Dockerfile installs from uv.lock, so bumping here is enough — the
     # stale inline pip list that used to drift was removed (see Dockerfile).
-    "mcpfleet-obs==0.5.0",
+    "mcpfleet-obs==0.6.0",
 ]
 
 [project.urls]

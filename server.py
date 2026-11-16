@@ -58,7 +58,7 @@ for _namespace, _url in PROXY_MOUNTS.items():
 
 @mcp.custom_route("/.well-known/mcp/server-card.json", methods=["GET"])
 async def smithery_server_card(request):
-    return JSONResponse({"serverInfo": {"name": "uk-business-mcp", "version": "0.3.0"}})
+    return JSONResponse({"serverInfo": {"name": "uk-business-mcp", "version": "0.3.1"}})
 
 
 @mcp.custom_route("/.well-known/glama.json", methods=["GET"])

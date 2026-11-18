@@ -2,6 +2,13 @@
 
 All notable changes to `uk-business-mcp` (Ledgerhall) are documented here, starting with 0.4.0. Earlier releases are described in their GitHub release notes.
 
+## [0.4.1] — 2026-11-18
+
+### Fixed
+
+- `GET /mcp` returns 405 instead of a held-open empty event stream, matching the upstream servers (#12).
+- `/health` lists the upstreams from the first request after boot; it was empty for the first minute (#13).
+
 ## [0.4.0] — 2026-11-18
 
 ### Changed

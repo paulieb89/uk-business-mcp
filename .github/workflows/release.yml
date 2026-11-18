@@ -14,6 +14,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
+      - name: Tool reference is current
+        # Captures the live upstreams' tools with fastmcp inspect; fails if
+        # docs/tool-reference.md is stale or a tool is in no table.
+        run: |
+          uv sync --frozen --no-install-project
+          uv run --no-sync python scripts/gen_reference.py --check
       - run: uv build
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -26,6 +32,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only --ha=false
+      - run: flyctl deploy --remote-only --ha=false --build-arg GIT_SHA=${{ github.sha }}
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

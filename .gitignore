@@ -39,7 +39,8 @@ Thumbs.db
 .mcp.json
 mcp.json
 SESSION.md
-.claude/
+.claude/*
+!.claude/skills/
 .superpowers/
 PLAN-*.md
 ROADMAP.md

@@ -29,49 +29,43 @@ Once connected, your AI agent can:
 - **Query GOV.UK** — search 700k+ pages, resolve postcodes to councils, find policy documents
 - **Run due diligence** — cross-reference Companies House, Charity Commission, Land Registry, Gazette insolvency, sanctions lists
 
-## Setup
+## Connect
 
-### claude.ai
+Hosted endpoint — no install, no API key:
 
-1. Go to **Settings** (bottom left)
-2. Click **MCP Servers**
-3. Click **Add**
-4. Paste: `https://uk-business-mcp.fly.dev/mcp`
+```text
+https://uk-business-mcp.fly.dev/mcp
+```
 
-### Claude Desktop
+### Claude (web, desktop and mobile)
 
-Add to `claude_desktop_config.json`:
+1. Open **Customize → Connectors** ([claude.ai/customize/connectors](https://claude.ai/customize/connectors)).
+2. Click **Add custom connector**.
+3. Name it `ledgerhall`, paste the URL above and click **Add**. No sign-in is needed.
+
+That's it — no config file to edit and no restart. Add the connector on web or desktop, and it's then available on your account, including the mobile apps. Turn it on or off per chat from the **+** menu → **Connectors**. On Team and Enterprise plans an Owner adds it once under **Organization settings → Connectors**; Free plans can add one custom connector.
+
+### Claude Code
+
+If you've added the connector above, Claude Code lists it under `/mcp` — but only when Claude Code is signed in with your claude.ai subscription login, not an API key. Otherwise, add it directly:
+
+```bash
+claude mcp add --transport http --scope user ledgerhall https://uk-business-mcp.fly.dev/mcp
+```
+
+### ChatGPT
+
+Turn on **Developer mode** (Settings → Apps & Connectors → Advanced settings), then **Create** a connector and paste the URL above. OpenAI moves these menus around; see their [developer mode guide](https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt) if a label doesn't match.
+
+### Other clients
+
+For Cursor (`.cursor/mcp.json`) and other clients configured with `mcpServers` JSON:
 
 ```json
 {
   "mcpServers": {
     "ledgerhall": {
       "type": "http",
-      "url": "https://uk-business-mcp.fly.dev/mcp"
-    }
-  }
-}
-```
-
-### Claude Code
-
-```bash
-claude mcp add --transport http ledgerhall https://uk-business-mcp.fly.dev/mcp
-```
-
-### ChatGPT
-
-1. Go to **Settings** → **Connected apps** → **Add MCP server**
-2. Paste: `https://uk-business-mcp.fly.dev/mcp`
-
-### Cursor / other editors
-
-Add to `.cursor/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "ledgerhall": {
       "url": "https://uk-business-mcp.fly.dev/mcp"
     }
   }

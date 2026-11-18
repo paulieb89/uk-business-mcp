@@ -25,6 +25,11 @@ COPY server.py ./
 # Run out of the synced environment rather than the system interpreter.
 ENV PATH="/app/.venv/bin:$PATH"
 
+# Commit the image was built from, reported by /health. release.yml passes
+# --build-arg GIT_SHA=<sha>; declared after the dependency layer so it never busts it.
+ARG GIT_SHA=unknown
+ENV GIT_SHA=$GIT_SHA
+
 EXPOSE 8000
 
 CMD ["python", "server.py"]

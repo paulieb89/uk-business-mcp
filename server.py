@@ -1,4 +1,11 @@
+import asyncio
 import os
+import time
+import tomllib
+from importlib.metadata import PackageNotFoundError, version as _pkg_version
+from pathlib import Path
+
+import httpx
 
 from fastmcp import Client, FastMCP
 from fastmcp.server import create_proxy
@@ -69,9 +76,66 @@ async def glama_claim(request):
     })
 
 
+def _project_version() -> str:
+    """Package version; the image does not install the project, so fall back
+    to pyproject.toml (copied into the image) for the same number."""
+    try:
+        return _pkg_version("uk-business-mcp")
+    except PackageNotFoundError:
+        pyproject = Path(__file__).with_name("pyproject.toml")
+        return tomllib.loads(pyproject.read_text())["project"]["version"]
+
+
+SERVER_VERSION = _project_version()
+# Commit the image was built from (Docker build arg from release.yml).
+GIT_SHA = os.environ.get("GIT_SHA") or "unknown"
+
+# /health also reports what each upstream mount is running, so one request shows
+# the whole Ledgerhall stack (e.g. after an upstream release). Fly probes /health
+# every 30s with a 5s timeout: the upstream view is cached for UPSTREAM_TTL and
+# each upstream gets UPSTREAM_TIMEOUT, and an upstream being down never changes
+# the proxy's own status — otherwise an upstream outage would restart this machine.
+UPSTREAM_TTL = 60.0
+UPSTREAM_TIMEOUT = 2.5
+_upstream_cache: dict = {"at": 0.0, "data": {}}
+_upstream_lock = asyncio.Lock()
+
+
+async def _upstream_health(client: httpx.AsyncClient, url: str) -> dict:
+    health_url = url.rsplit("/mcp", 1)[0] + "/health"
+    try:
+        resp = await client.get(health_url)
+        body = resp.json() if resp.status_code == 200 else {}
+        return {
+            "status": body.get("status") or f"HTTP {resp.status_code}",
+            "version": body.get("version"),
+            "git_sha": body.get("git_sha"),
+        }
+    except (httpx.HTTPError, ValueError) as exc:
+        return {"status": "unreachable", "error": type(exc).__name__}
+
+
+async def _upstreams() -> dict:
+    async with _upstream_lock:
+        if time.monotonic() - _upstream_cache["at"] < UPSTREAM_TTL:
+            return _upstream_cache["data"]
+        async with httpx.AsyncClient(timeout=UPSTREAM_TIMEOUT) as client:
+            results = await asyncio.gather(
+                *(_upstream_health(client, url) for url in PROXY_MOUNTS.values())
+            )
+        _upstream_cache["data"] = dict(zip(PROXY_MOUNTS, results))
+        _upstream_cache["at"] = time.monotonic()
+        return _upstream_cache["data"]
+
+
 @mcp.custom_route("/health", methods=["GET"])
 async def health(request):
-    return JSONResponse({"status": "ok"})
+    return JSONResponse({
+        "status": "ok",
+        "version": SERVER_VERSION,
+        "git_sha": GIT_SHA,
+        "upstreams": await _upstreams(),
+    })
 
 
 # Fleet-standard observability: client tracking (who calls Ledgerhall — until this,

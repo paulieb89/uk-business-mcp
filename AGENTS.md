@@ -30,10 +30,10 @@ Port: `server.py` reads `PORT` (default 8080); fly.toml `internal_port = 8080`.
 
 ## Version bump
 
-1. Update `version` in `pyproject.toml`
-2. Update version string in the `smithery_server_card` route in `server.py`
-3. Commit, tag `vX.Y.Z`, push + push tag
-4. `gh release create` — the workflow publishes to PyPI then deploys
+Follow the `/release` skill (`.claude/skills/release/SKILL.md`): bump `version`
+in `pyproject.toml` and the `smithery_server_card` string in `server.py`, add a
+`CHANGELOG.md` entry, run the proxy live checks before and after, and state the
+rollback before `gh release create`.
 
 Published on PyPI as `uk-business-mcp` (0.1.1+).
 

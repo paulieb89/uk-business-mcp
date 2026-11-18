@@ -64,7 +64,7 @@ async def test_proxied_tool_error_counts_as_error_with_category():
 
         raw = await client.call_tool_mcp("dd_stub_fail", {})
 
-    assert raw.isError is True
+    assert raw.is_error is True
     payload = parse_error_payload(raw.content[0].text)
     assert payload is not None
     assert payload.error_category == "transient"
@@ -96,7 +96,7 @@ async def test_proxied_tool_success_counts_as_ok():
 
         raw = await client.call_tool_mcp("dd_stub_ok", {})
 
-    assert not raw.isError
+    assert not raw.is_error
 
     value = registry.get_sample_value(
         "uk_business_tool_calls_total",

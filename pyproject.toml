@@ -14,8 +14,8 @@ authors = [
     { name = "Paul Boucherat", email = "paul@bouch.dev" },
 ]
 dependencies = [
-    "fastmcp==3.2.4",
-    "mcp==1.27.0",
+    "fastmcp==4.1.8",
+    "mcp==2.3.0",
     "pydantic==2.13.0",
     "httpx==0.28.1",
     "uvicorn==0.44.0",
@@ -60,3 +60,10 @@ dev = [
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+
+[tool.reference-tables]
+# scripts/gen_reference.py: fastmcp inspect entry and the docs whose
+# GENERATED tables it rewrites. The surface is the four upstream mounts, so a
+# capture lists the live upstreams' tools.
+entry = "server.py:mcp"
+docs = ["docs/tool-reference.md"]

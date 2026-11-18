@@ -1337,7 +1337,7 @@ wheels = [
 
 [[package]]
 name = "uk-business-mcp"
-version = "0.3.1"
+version = "0.4.0"
 source = { editable = "." }
 dependencies = [
     { name = "brotli" },

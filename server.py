@@ -97,7 +97,9 @@ GIT_SHA = os.environ.get("GIT_SHA") or "unknown"
 # the proxy's own status — otherwise an upstream outage would restart this machine.
 UPSTREAM_TTL = 60.0
 UPSTREAM_TIMEOUT = 2.5
-_upstream_cache: dict = {"at": 0.0, "data": {}}
+# "at" is None until the first fetch. Not 0.0: monotonic() counts from boot, so on
+# a freshly started VM a 0.0 stamp looked fresh for the first UPSTREAM_TTL (#13).
+_upstream_cache: dict = {"at": None, "data": {}}
 _upstream_lock = asyncio.Lock()
 
 
@@ -117,7 +119,8 @@ async def _upstream_health(client: httpx.AsyncClient, url: str) -> dict:
 
 async def _upstreams() -> dict:
     async with _upstream_lock:
-        if time.monotonic() - _upstream_cache["at"] < UPSTREAM_TTL:
+        at = _upstream_cache["at"]
+        if at is not None and time.monotonic() - at < UPSTREAM_TTL:
             return _upstream_cache["data"]
         async with httpx.AsyncClient(timeout=UPSTREAM_TIMEOUT) as client:
             results = await asyncio.gather(
@@ -142,51 +145,10 @@ async def health(request):
 # the only server-side signal was upstream connections, e.g. 672 in ten hours to
 # uk-due-diligence, 2.4x the next client, with nothing about who was calling
 # Ledgerhall itself) + tool-call metrics (new: this proxy never had any) + /metrics.
-# _AcceptNormalizer and _HttpGuard below only intercept /mcp, so /metrics passes
+# _AcceptNormalizer below only intercepts /mcp, so /metrics passes
 # through untouched — readable unauthenticated over HTTPS, which is what lets one
 # sweep read every server's callers without a Fly token.
 install(mcp, prefix="uk_business", proxy_namespaces=PROXY_MOUNTS)
-
-
-class _HttpGuard:
-    """Return a held-open SSE stream for GET /mcp; 405 for DELETE /mcp.
-
-    claude.ai probes GET /mcp to establish an SSE stream before sending MCP
-    protocol messages via POST. With stateless_http=True FastMCP only registers
-    POST routes, so GET returns 405 — claude.ai treats this as a connection
-    failure even though POST works fine.
-
-    Fix: intercept GET /mcp and return 200 text/event-stream held open until
-    the client disconnects. FastMCP never sees the GET; stateless semantics
-    are preserved. DELETE is rejected (405) — stateless servers have no sessions.
-    """
-
-    def __init__(self, app, mcp_path: bytes = b"/mcp"):
-        self.app = app
-        self._mcp_path = mcp_path.rstrip(b"/")
-
-    async def __call__(self, scope, receive, send):
-        if scope.get("type") == "http":
-            path = scope.get("path", "").rstrip("/").encode()
-            method = scope.get("method", "").upper().encode()
-            if path == self._mcp_path:
-                if method == b"GET":
-                    await send({"type": "http.response.start", "status": 200, "headers": [
-                        (b"content-type", b"text/event-stream"),
-                        (b"cache-control", b"no-cache"),
-                        (b"connection", b"keep-alive"),
-                    ]})
-                    await send({"type": "http.response.body", "body": b"", "more_body": True})
-                    while True:
-                        event = await receive()
-                        if event["type"] == "http.disconnect":
-                            break
-                    return
-                if method == b"DELETE":
-                    from starlette.responses import Response as StarletteResponse
-                    await StarletteResponse("Method Not Allowed", status_code=405, headers={"Allow": "POST"})(scope, receive, send)
-                    return
-        await self.app(scope, receive, send)
 
 
 class _AcceptNormalizer:
@@ -212,23 +174,29 @@ class _AcceptNormalizer:
         await self.app(scope, receive, send)
 
 
-def main():
-    import uvicorn
+def create_app():
+    """The ASGI app main() serves (tests build it the same way)."""
     from fastmcp.server.http import create_streamable_http_app
 
     # stateless_http=True: each request creates a fresh transport context.
     # Required for aggregator proxies (Lesson 32) and multi-machine Fly
     # deploys (Lesson 2) — without it, clients hit "Missing session ID"
     # on any request not preceded by initialize on the same machine.
-    port = int(os.environ.get("PORT", "8080"))
     app = create_streamable_http_app(
         mcp,
         streamable_http_path="/mcp",
         json_response=True,
         stateless_http=True,
     )
+    return _AcceptNormalizer(app)
+
+
+def main():
+    import uvicorn
+
+    port = int(os.environ.get("PORT", "8080"))
     uvicorn.run(
-        _HttpGuard(_AcceptNormalizer(app)),
+        create_app(),
         host="0.0.0.0",
         port=port,
         forwarded_allow_ips="*",

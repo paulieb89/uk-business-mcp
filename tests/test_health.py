@@ -4,16 +4,20 @@ Fly probes /health every 30s with a 5s timeout, so the upstream view is cached
 and an unreachable upstream must never change the proxy's own status.
 """
 
+import copy
 import json
 
 import pytest
 
 import server
 
+# The cache exactly as server.py ships it, captured before any test touches it.
+INITIAL_CACHE = copy.deepcopy(server._upstream_cache)
+
 
 @pytest.fixture(autouse=True)
 def _fresh_cache(monkeypatch):
-    monkeypatch.setattr(server, "_upstream_cache", {"at": 0.0, "data": {}})
+    monkeypatch.setattr(server, "_upstream_cache", copy.deepcopy(INITIAL_CACHE))
 
 
 def _body(resp) -> dict:
@@ -71,3 +75,23 @@ async def test_unreachable_upstream_keeps_proxy_status_ok(monkeypatch):
 
     assert body["status"] == "ok"
     assert all(u == {"status": "unreachable", "error": "ConnectError"} for u in body["upstreams"].values())
+
+
+
+@pytest.mark.asyncio
+async def test_upstreams_fetched_on_a_freshly_booted_vm(monkeypatch):
+    """#13: monotonic() counts from boot. On a new Fly VM it is small, and the
+    shipped cache (stamped 0.0) looked fresh for the first 60 s, so /health
+    reported no upstreams. The initial state must mean 'never fetched'."""
+    calls = []
+
+    async def fake(client, url):
+        calls.append(url)
+        return {"status": "ok", "version": None, "git_sha": None}
+
+    monkeypatch.setattr(server, "_upstream_health", fake)
+    monkeypatch.setattr(server.time, "monotonic", lambda: 5.0)
+    body = _body(await server.health(None))
+
+    assert len(calls) == len(server.PROXY_MOUNTS)
+    assert set(body["upstreams"]) == set(server.PROXY_MOUNTS)

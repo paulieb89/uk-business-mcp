@@ -1,5 +1,7 @@
 # Ledgerhall
 
+Maintained by BOUCH — private hosting, custom tools and setup: paul@bouch.dev · [bouch.dev/products/uk-business-mcp](https://bouch.dev/products/uk-business-mcp)
+
 <!-- mcp-name: io.github.paulieb89/uk-business-mcp -->
 
 [![Glama](https://img.shields.io/badge/Glama-listed-orange?style=flat-square)](https://glama.ai/mcp/connectors/dev.fly.uk-business-mcp/uk-business-tools-ledgerhall)
